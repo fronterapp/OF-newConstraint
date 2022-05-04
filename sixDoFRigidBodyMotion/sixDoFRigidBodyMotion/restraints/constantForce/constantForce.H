@@ -58,22 +58,14 @@ class constantForce
 {
     // Private data
 
-        //- Anchor point, where the spring is attached to an immovable
-        //  object
-        point anchor_;
+        //- Point where the constant force is being applied
+        point applicationPt_;
 
-        //- Reference point of attachment to the solid body
-        point refAttachmentPt_;
+        //- Magnitude of the applied force (N)
+        scalar magnitude_;
 
-        //- Spring stiffness coefficient (N/m)
-        scalar stiffness_;
-
-        //- Damping coefficient (Ns/m)
-        scalar damping_;
-
-        //- Rest length - length of spring when no forces are applied to it
-        scalar restLength_;
-
+        //- Direction of the applied force
+        vector direction_;
 
 public:
 

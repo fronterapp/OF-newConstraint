@@ -56,11 +56,9 @@ Foam::sixDoFRigidBodyMotionRestraints::constantForce::constantForce
 )
 :
     sixDoFRigidBodyMotionRestraint(name, sDoFRBMRDict),
-    anchor_(),
-    refAttachmentPt_(),
-    stiffness_(),
-    damping_(),
-    restLength_()
+    applicationPt_(),
+    magnitude_(),
+    direction_()
 {
     read(sDoFRBMRDict);
 }
@@ -112,11 +110,9 @@ bool Foam::sixDoFRigidBodyMotionRestraints::constantForce::read
 {
     sixDoFRigidBodyMotionRestraint::read(sDoFRBMRDict);
 
-    sDoFRBMRCoeffs_.readEntry("anchor", anchor_);
-    sDoFRBMRCoeffs_.readEntry("refAttachmentPt", refAttachmentPt_);
-    sDoFRBMRCoeffs_.readEntry("stiffness", stiffness_);
-    sDoFRBMRCoeffs_.readEntry("damping", damping_);
-    sDoFRBMRCoeffs_.readEntry("restLength", restLength_);
+    sDoFRBMRCoeffs_.readEntry("applicationPt", applicationPt_);
+    sDoFRBMRCoeffs_.readEntry("magnitude", magnitude_);
+    sDoFRBMRCoeffs_.readEntry("direction", direction_);
 
     return true;
 }
@@ -127,11 +123,9 @@ void Foam::sixDoFRigidBodyMotionRestraints::constantForce::write
     Ostream& os
 ) const
 {
-    os.writeEntry("anchor", anchor_);
-    os.writeEntry("refAttachmentPt", refAttachmentPt_);
-    os.writeEntry("stiffness", stiffness_);
-    os.writeEntry("damping", damping_);
-    os.writeEntry("restLength", restLength_);
+    os.writeEntry("applicationPt", applicationPt_);
+    os.writeEntry("magnitude", magnitude_);
+    os.writeEntry("direction", direction_);
 }
 
 // ************************************************************************* //
