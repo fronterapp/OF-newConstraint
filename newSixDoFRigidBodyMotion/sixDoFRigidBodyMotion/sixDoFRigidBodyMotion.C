@@ -325,10 +325,11 @@ void Foam::sixDoFRigidBodyMotion::update
             status();
         }
 
-        updateDict();
+        //updateDict();
     }
 
     Pstream::scatter(motionState_);
+    updateDict();
 }
 
 
