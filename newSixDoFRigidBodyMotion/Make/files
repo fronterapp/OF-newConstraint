@@ -15,7 +15,7 @@ $(restraints)/linearDamper/linearDamper.C
 $(restraints)/sphericalAngularDamper/sphericalAngularDamper.C
 $(restraints)/linearSpringDamper/linearSpringDamper.C
 $(restraints)/constantForce/constantForce.C
-$(restraints)/constantForce/turbineAL.C
+$(restraints)/turbineAL/turbineAL.C
 
 constraints = sixDoFRigidBodyMotion/constraints
 

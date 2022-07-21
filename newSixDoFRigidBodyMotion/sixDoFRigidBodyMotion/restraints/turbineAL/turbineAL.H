@@ -45,6 +45,7 @@ SourceFiles
 #define turbineAL_H
 
 #include "sixDoFRigidBodyMotionRestraint.H"
+#include "runTimeSelectionTables.H"
 #include "point.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -65,21 +66,15 @@ class turbineAL
 {
     // Private data
 
-        //- Point where the force is being applied
-        vector applicationPt_;
-
-        //- Applied turbine force
-        vector force_;
-
-        //- Applied turbine moment
-        vector moment_;
-
-
+        //- Reference to time database
+        const objectRegistry& db();
+        const Time& time_ = db().time();
+        
 public:
-
     //- Runtime type information
     TypeName("turbineAL");
 
+    // Public data
 
     // Constructors
 
@@ -127,9 +122,6 @@ public:
 
         //- Initialise 'turbineSixDoFLoads' IOdictionary
         void initialiseTurbineDict();
-
-        //- Read turbine load data from the 'turbineSixDoFLoads' IOdictionary
-        void readTurbineDict();
 };
 
 

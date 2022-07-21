@@ -28,6 +28,7 @@ License
 #include "turbineAL.H"
 #include "addToRunTimeSelectionTable.H"
 #include "sixDoFRigidBodyMotion.H"
+#include "fvMesh.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -55,11 +56,8 @@ Foam::sixDoFRigidBodyMotionRestraints::turbineAL::turbineAL
     const dictionary& sDoFRBMRDict
 )
 :
-    sixDoFRigidBodyMotionRestraint(name, sDoFRBMRDict),
-    applicationPt_(),
-    magnitude_(),
-    direction_()
-{
+    sixDoFRigidBodyMotionRestraint(name, sDoFRBMRDict)
+{   
     read(sDoFRBMRDict);
     createTurbineDict();
 }
@@ -81,23 +79,25 @@ void Foam::sixDoFRigidBodyMotionRestraints::turbineAL::restrain
     vector& restraintMoment
 ) const
 {
-    // Read load data from IOdictionary
-    readTurbineDict();
+    dictionary loadDict = dictionary();
 
-    // Force application point
-    restraintPosition = applicationPt_; 
+    // If turbine loads dictionary exists
+    if(time_.foundObject<IOdictionary>("turbineSixDoFLoads"))
+    {
+        //- Read turbine load dict from the 'turbineSixDoFLoads' IOdictionary
+        loadDict = time_.lookupObject<IOdictionary>("turbineSixDoFLoads");
+    }
 
-    // Force vector
-    restraintForce = force_;
-
-    // Moment vector
-    restraintMoment = moment_;  
+    // Get load data from dictionary
+    loadDict.lookup("force") >> restraintForce;
+    loadDict.lookup("moment") >> restraintMoment;
+    loadDict.lookup("refPoint") >> restraintPosition;
 
     if (motion.report())
     {
-        Info<< " force application point " << restraintPosition
-            << " force vector " << restraintForce
-            << " moment vector " << restraintMoment
+        Info<< " turbine force application point " << restraintPosition
+            << " turbine force vector " << restraintForce
+            << " turbine moment vector " << restraintMoment
             << endl;
     }
 }
@@ -118,12 +118,10 @@ void Foam::sixDoFRigidBodyMotionRestraints::turbineAL::write
     Ostream& os
 ) const
 {
-    os.writeEntry("force", force_);
-    os.writeEntry("moment", moment_);
-    os.writeEntry("applicationPt", applicationPt_);
+
 }
 
-void Foam::sixDoFRigidBodyMotionRestraints::turbineAL::createTurbineDict
+void Foam::sixDoFRigidBodyMotionRestraints::turbineAL::createTurbineDict()
 {
     // Create dictionary if it has not been created before
     if(!time_.foundObject<IOdictionary>("turbineSixDoFLoads"))
@@ -172,16 +170,4 @@ void Foam::sixDoFRigidBodyMotionRestraints::turbineAL::initialiseTurbineDict()
     }
 }
 
-void Foam::sixDoFRigidBodyMotionRestraints::turbineAL::readTurbineDict()
-{
-    // If rigid body dictionary exists
-    if(time_.foundObject<IOdictionary>("turbineSixDoFLoads"))
-    {
-        // Access dictionary
-        const dictionary& loadDict = time_.lookupObject<IOdictionary>("turbineSixDoFLoads");
-        loadDict.lookup("force") >> force_;
-        loadDict.lookup("moment") >> force_;
-        loadDict.lookup("refPoint") >> applicationPt_;
-    }
-}
 // ************************************************************************* //
