@@ -28,7 +28,6 @@ License
 #include "turbineAL.H"
 #include "addToRunTimeSelectionTable.H"
 #include "sixDoFRigidBodyMotion.H"
-#include "fvMesh.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -57,9 +56,8 @@ Foam::sixDoFRigidBodyMotionRestraints::turbineAL::turbineAL
 )
 :
     sixDoFRigidBodyMotionRestraint(name, sDoFRBMRDict)
-{   
+{
     read(sDoFRBMRDict);
-    createTurbineDict();
 }
 
 
@@ -79,26 +77,33 @@ void Foam::sixDoFRigidBodyMotionRestraints::turbineAL::restrain
     vector& restraintMoment
 ) const
 {
+    //- Reference to time database
+    const Time& time = motion.time();
+
+    //- Create and initialise IO dictionary for turbine loads
+    //- Only done at first time-step
+    createTurbineDict(time);
+
+    //- Access the dictionary
     dictionary loadDict = dictionary();
 
-    // If turbine loads dictionary exists
-    if(time_.foundObject<IOdictionary>("turbineSixDoFLoads"))
+    // If turbine load IOdictionary exists
+    if(time.foundObject<IOdictionary>("turbineSixDoFLoads"))
     {
-        //- Read turbine load dict from the 'turbineSixDoFLoads' IOdictionary
-        loadDict = time_.lookupObject<IOdictionary>("turbineSixDoFLoads");
+        //- Access turbine load dict from the 'turbineSixDoFLoads' IOdictionary
+        loadDict = time.lookupObject<IOdictionary>("turbineSixDoFLoads");
     }
 
     // Get load data from dictionary
+    loadDict.lookup("refPoint") >> restraintPosition;
     loadDict.lookup("force") >> restraintForce;
     loadDict.lookup("moment") >> restraintMoment;
-    loadDict.lookup("refPoint") >> restraintPosition;
 
     if (motion.report())
     {
-        Info<< " turbine force application point " << restraintPosition
-            << " turbine force vector " << restraintForce
-            << " turbine moment vector " << restraintMoment
-            << endl;
+        Info<< " turbine force application point: " << restraintPosition << endl
+            << " turbine force vector: " << restraintForce << endl
+            << " turbine moment vector: " << restraintMoment << endl;
     }
 }
 
@@ -109,6 +114,7 @@ bool Foam::sixDoFRigidBodyMotionRestraints::turbineAL::read
 )
 {
     sixDoFRigidBodyMotionRestraint::read(sDoFRBMRDict);
+
     return true;
 }
 
@@ -121,43 +127,43 @@ void Foam::sixDoFRigidBodyMotionRestraints::turbineAL::write
 
 }
 
-void Foam::sixDoFRigidBodyMotionRestraints::turbineAL::createTurbineDict()
+void Foam::sixDoFRigidBodyMotionRestraints::turbineAL::createTurbineDict(const Time& time) const
 {
     // Create dictionary if it has not been created before
-    if(!time_.foundObject<IOdictionary>("turbineSixDoFLoads"))
+    if(!time.foundObject<IOdictionary>("turbineSixDoFLoads"))
     {
-        dictionary motionDict;
-        time_.store
+        dictionary loadsDict;
+        time.store
         (   
             new IOdictionary
             (   
                 IOobject
                 (   
                     "turbineSixDoFLoads",
-                    time_.timeName(),
-                    time_,
+                    time.timeName(),
+                    time,
                     IOobject::NO_READ,
                     IOobject::AUTO_WRITE
                 ),
-                motionDict
+                loadsDict
             )
         );
 
         Info << "Rigid body IOdictionary 'turbineSixDoFLoads' created" << endl;
 
-        initialiseTurbineDict();
+        initialiseTurbineDict(time);
     }
 }
 
-void Foam::sixDoFRigidBodyMotionRestraints::turbineAL::initialiseTurbineDict()
+void Foam::sixDoFRigidBodyMotionRestraints::turbineAL::initialiseTurbineDict(const Time& time) const
 {
-    if(time_.foundObject<IOdictionary>("turbineSixDoFLoads"))
+    if(time.foundObject<IOdictionary>("turbineSixDoFLoads"))
     {
         // Open and write
         const dictionary& loadsDict = 
-            time_.lookupObject<IOdictionary>("turbineSixDoFLoads");
+            time.lookupObject<IOdictionary>("turbineSixDoFLoads");
 
-        // Initialise the load data with zero entries
+        // Initialise with zero entries
         dictionary updateDbDictionary = &loadsDict;
         updateDbDictionary.set("force", vector::zero);
         updateDbDictionary.set("moment", vector::zero);

@@ -221,7 +221,6 @@ void Foam::sixDoFRigidBodyMotion::addRestraints
                 );
             }
         }
-
         restraints_.setSize(i);
     }
 }
@@ -245,6 +244,7 @@ void Foam::sixDoFRigidBodyMotion::addConstraints
 
         for (const entry& dEntry : constraintDict)
         {
+
             if (dEntry.isDict())
             {
                 constraints_.set

@@ -96,9 +96,9 @@ void Foam::sixDoFRigidBodyMotionRestraints::constantForce::restrain
 
     if (motion.report())
     {
-        Info<< " force application point " << restraintPosition
-            << " force direction " << dir
-            << " force " << restraintForce
+        Info<< " force application point: " << restraintPosition << endl
+            << " force direction: " << dir << endl
+            << " force magnitude: " << restraintForce << endl
             << endl;
     }
 }

@@ -45,7 +45,6 @@ SourceFiles
 #define turbineAL_H
 
 #include "sixDoFRigidBodyMotionRestraint.H"
-#include "runTimeSelectionTables.H"
 #include "point.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -65,11 +64,7 @@ class turbineAL
     public sixDoFRigidBodyMotionRestraint
 {
     // Private data
-
-        //- Reference to time database
-        const objectRegistry& db();
-        const Time& time_ = db().time();
-        
+       
 public:
     //- Runtime type information
     TypeName("turbineAL");
@@ -118,10 +113,10 @@ public:
         virtual void write(Ostream&) const;
 
         //- Create the 'turbineSixDoFLoads' IOdictionary where turbinesFOAM will write turbine loads
-        void createTurbineDict();
+        void createTurbineDict(const Time& time) const;
 
         //- Initialise 'turbineSixDoFLoads' IOdictionary
-        void initialiseTurbineDict();
+        void initialiseTurbineDict(const Time& time) const;
 };
 
 
