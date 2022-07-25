@@ -395,7 +395,10 @@ void Foam::sixDoFRigidBodyMotion::status() const
         << "    Centre of mass: " << centreOfMass() << nl
         << "    Orientation: " << orientation() << nl
         << "    Linear velocity: " << v() << nl
-        << "    Angular velocity: " << omega()
+        << "    Linear acceleration: " << a() << nl
+        << "    Angular velocity: " << omega() << nl
+        << "    Angular momentum: " << pi() << nl
+        << "    Torque: " << tau() 
         << endl;
 }
 
